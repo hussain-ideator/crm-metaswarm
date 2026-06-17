@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "crm_metaswarm",
+  "project_id": "b38c27d0-54ad-431a-9fe5-a40a1a7f0027"
+}
