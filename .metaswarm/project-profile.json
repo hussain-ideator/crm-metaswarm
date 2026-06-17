@@ -1,0 +1,24 @@
+{
+  "name": "crm-metaswarm",
+  "type": "fullstack",
+  "frontend": {
+    "framework": "nextjs",
+    "language": "typescript",
+    "testRunner": "vitest",
+    "testingLibrary": "react-testing-library",
+    "coverage": {
+      "threshold": 80,
+      "enforce": true
+    }
+  },
+  "backend": {
+    "language": "python",
+    "framework": "django",
+    "restLayer": "adrf",
+    "testRunner": "pytest",
+    "testPlugin": "pytest-django"
+  },
+  "ci": "github-actions",
+  "packageManager": "npm",
+  "createdAt": "2026-06-17"
+}
