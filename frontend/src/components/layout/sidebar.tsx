@@ -5,7 +5,10 @@ import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 
-const navItems = [{ href: '/', label: 'Dashboard' }]
+const navItems = [
+  { href: '/', label: 'Dashboard' },
+  { href: '/companies', label: 'Companies' },
+]
 
 export function Sidebar() {
   const pathname = usePathname()

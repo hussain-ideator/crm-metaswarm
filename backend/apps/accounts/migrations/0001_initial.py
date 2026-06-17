@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import apps.accounts.models
+import django.db.models.deletion
 import django.utils.timezone
 from django.db import migrations, models
 
@@ -56,5 +57,17 @@ class Migration(migrations.Migration):
             managers=[
                 ('objects', apps.accounts.models.UserManager()),
             ],
+        ),
+        migrations.AddField(
+            model_name='user',
+            name='created_by',
+            field=models.ForeignKey(
+                blank=True,
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='created_accounts_user_set',
+                to='accounts.user',
+            ),
         ),
     ]
