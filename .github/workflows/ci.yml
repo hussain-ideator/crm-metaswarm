@@ -2,90 +2,94 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
-  backend-test:
-    name: Backend — pytest
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: crm_test
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: crm
+          MYSQL_PASSWORD: crm
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u crm -pcrm"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-          pip install pytest pytest-django pytest-cov adrf
+        run: pip install -r requirements.txt
+        working-directory: backend
 
-      - name: Run tests with coverage
-        run: |
-          cd backend
-          pytest --cov=. --cov-report=term-missing --cov-fail-under=80
+      - name: Ruff check
+        run: ruff check .
+        working-directory: backend
 
-  frontend-test:
-    name: Frontend — Vitest
+      - name: Mypy
+        run: mypy apps/
+        working-directory: backend
+
+      - name: Pytest
+        env:
+          DATABASE_URL: mysql://crm:crm@127.0.0.1:3306/crm_test
+          SECRET_KEY: ci-secret-key-not-for-production
+          DEBUG: 'true'
+          DJANGO_SETTINGS_MODULE: crm.settings.dev
+        run: pytest
+        working-directory: backend
+
+  frontend:
+    name: Frontend
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache: npm
+          cache-dependency-path: frontend/package.json
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+        run: npm install
+        working-directory: frontend
 
-      - name: Type check
-        run: |
-          cd frontend
-          npm run typecheck
+      - name: ESLint
+        run: npm run lint
+        working-directory: frontend
 
-      - name: Lint
-        run: |
-          cd frontend
-          npm run lint
+      - name: TypeScript check
+        run: npm run typecheck
+        working-directory: frontend
 
-      - name: Run tests with coverage
-        run: |
-          cd frontend
-          npm run test:coverage
+      - name: Vitest coverage
+        run: npm run test:coverage
+        working-directory: frontend
 
-  build:
-    name: Build Frontend
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+      - name: Prettier check
+        run: npm run format:check
+        working-directory: frontend
 
       - name: Build
-        run: |
-          cd frontend
-          npm run build
+        run: npm run build
+        working-directory: frontend

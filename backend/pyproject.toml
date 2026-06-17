@@ -1,0 +1,41 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "crm.settings.dev"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "crm.settings.dev"
+pythonpath = ["."]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+asyncio_mode = "auto"
+addopts = "--cov=. --cov-report=term-missing --cov-fail-under=80"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "conftest.py",
+    "manage.py",
+    "crm/settings/*",
+    "*/asgi.py",
+    "*/wsgi.py",
+    "*/apps.py",
+    "*/signals.py",
+    "*/filters.py",
+    "*/services.py",
+]
