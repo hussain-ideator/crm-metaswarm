@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { href: '/', label: 'Dashboard' },
   { href: '/companies', label: 'Companies' },
+  { href: '/contacts', label: 'Contacts' },
 ]
 
 export function Sidebar() {
