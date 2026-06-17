@@ -1,0 +1,26 @@
+# External Tools Configuration
+# Enables cross-model adversarial review and implementation delegation.
+# If this file is absent, metaswarm works normally without any external tools.
+
+adapters:
+  codex:
+    enabled: true
+    model: "gpt-5.3-codex"
+    timeout_seconds: 300
+    sandbox: none
+    auth_env_var: "OPENAI_API_KEY"
+  gemini:
+    enabled: true
+    model: "pro"                     # pro | flash | flash-lite
+    timeout_seconds: 300
+    sandbox: none
+    auth_env_var: "GEMINI_API_KEY"   # Omit if using Google login instead of API key
+
+routing:
+  # cheapest-available | round-robin | codex | gemini
+  default_implementer: "cheapest-available"
+  escalation_order: ["codex", "gemini", "claude"]
+
+budget:
+  per_task_usd: 2.00
+  per_session_usd: 20.00
